@@ -1,0 +1,155 @@
+PATH=$PATH:/opt/local/Library/Frameworks/Python.framework/Versions/3.3/bin
+### Alias commands
+
+alias cdu='cd srv/http/'
+alias ls="ls -Gp"
+alias ll='ls -Gpl'
+alias l='ls  -lGpA'
+alias ..='cd ..'
+alias sf='app/console'
+alias vg='varant'
+alias scr='sudo chmod -R 777'
+alias phpx="php -dxdebug.remote_autostart=On -didekey=PHPSTORM -dremote_host=localhost -dxdebug.profiler_enable=1"
+alias brew-upgrade='brew cask list | xargs brew cask install --force'
+
+#alias git-bclean="git branch -vv | grep ': gone]' | awk '{print $1}' | xargs git branch -d"
+alias git-bclean='git branch --merged | grep -v "\*" | grep -v "master" | grep -v "develop" | grep -v "staging" | xargs -n 1 git branch -d'
+
+### ssh - server jobcloud
+
+alias web2='ssh hlowack@10.212.1.132'
+alias web3='ssh hlowack@10.212.1.133'
+alias web4='ssh hlowack@10.212.1.154'
+alias mgmt1='ssh hlowack@10.212.1.151'
+alias mgmt2='ssh hlowack@10.212.1.146'
+alias db1='ssh hlowack@10.212.1.141'
+alias db3='ssh hlowack@10.212.1.143'
+alias db4='ssh hlowack@10.212.1.144'
+alias cache1='ssh hlowack@10.212.1.148'
+
+alias jstage-mgmt='ssh jobsworker@10.212.1.150'
+alias jstage-web='ssh jobsworker@10.212.1.131'
+alias jstage-db='ssh jobsworker@10.212.1.142'
+alias jcache2='ssh jobsworker@10.212.1.149'
+
+alias stage-mgmt='ssh hlowack@10.212.1.150'
+alias stage-web='ssh hlowack@10.212.1.131'
+alias stage-db='ssh hlowack@10.212.1.142'
+alias cache2='ssh hlowack@10.212.1.149'
+
+alias mysqlstart='sudo /opt/local/bin/mysqld_safe &'
+alias mysqlstop='/opt/local/bin/mysqladmin -u root -p shutdown'
+
+function portrestart(){
+
+  item=$@
+  echo "reloading:" $item
+  sudo port unload $item && sudo  port load $item;
+}
+
+function scc(){
+
+  dev $1;
+  echo "--Clear Caches--";
+  sudo rm -rf app/cache/*:
+  sudo php app/console cache:clear;
+  sudo php app/console cache:clear --env="prod";
+  sudo chmod -R 777 app/cache;
+}
+
+function genmapping(){
+
+  entity=$1;
+  bundle=$2;
+  if [ "$entity" != "" ] && [ "$bundle" != "" ]
+  then
+    echo  "  generate '" $entity. "' in bundle:" $bundle;
+    echo "   "sf generate:extjs:controller --controller="$bundle:$entity" --entity="$bundle:$entity" --mapper="$bundle:Mapping/"$entity"Mapping"
+    echo "   "sf generate:mapping:mapper $bundle:Mapping/"$entity"Mapping $bundle:$entity
+
+    sf generate:extjs:controller --controller="$bundle:$entity" --entity="$bundle:$entity" --mapper="$bundle:Mapping/"$entity"Mapping"
+    sf generate:mapping:mapper $bundle:Mapping/"$entity"Mapping $bundle:$entity
+  else
+    echo "  define entity and bundle on call";
+    echo "  e.g genmapping MyEntity MyUserBundle"
+  fi
+}
+
+function gitmv(){
+
+  if [ -z "$3" ]
+  then
+    repo="origin";
+  else
+   repo=$3;
+  fi
+  if [ "$1" != "" ] && [ "$2" != "" ]
+  then
+    echo "git branch -m $1 $2 && git push $repo :$1 && git push $repo $2"
+    echo "git branch --set-upstream-to $repo/$2"
+    echo "execute command? (y/n)"
+    read -s CMD
+    if [ $CMD == "y" ]
+    then
+      git fetch $3;
+      git branch -m $1 $2 && git push $repo :$1 && git push $repo $2;
+      git branch --set-upstream-to $repo/$2;
+    else
+      echo "aborted";
+    fi
+ else
+    echo "usage: gitmv <old_branch> <new_branch> [remote:origin]"
+  fi
+}
+
+function unity(){
+
+  chooseme /Users/kato/Sites/autoWebFolder/unity-vagrant.katoserv.local/srv/http/ $1;
+}
+
+function legacy(){
+
+  chooseme /Users/kato/Sites/autoWebFolder/dev-vagrant.katoserv.local/srv/http/ $1;
+}
+
+
+function dev(){
+
+  chooseme /Users/kato/Sites/autoWebFolder/ $1;
+}
+
+function chooseme(){
+
+  cd "$1";
+  declare -a ARRAY
+  array=(`ls -1d -- */`)
+  len=${#array[*]}
+  let s=0
+  # if folder is given on command proceed anyway
+  if [ -z $2 ]
+  then
+    echo "--Choose one by number from $1--";
+    for i in "${array[@]}"
+      do
+        echo "($s) $i"
+        ((s++))
+      done
+    read -s NUMBER
+    cd  $1${array[${NUMBER}]};
+  else
+    cd $1${array[$2]};
+  fi
+}
+
+cpi(){
+
+  if [ "$#" == 2 ]
+  then
+    echo "copy from <$1> to <$2>";
+    pv < $1 > $2;
+  else
+    echo "$# args";
+    echo "Usage: cpi <from> <to>";
+  fi
+}
+
