@@ -12,7 +12,6 @@ alias scr='sudo chmod -R 777'
 alias phpx="php -dxdebug.remote_autostart=On -didekey=PHPSTORM -dremote_host=localhost -dxdebug.profiler_enable=1"
 alias brew-upgrade='brew cask list | xargs brew cask install --force'
 
-#alias git-bclean="git branch -vv | grep ': gone]' | awk '{print $1}' | xargs git branch -d"
 alias git-bclean='git branch --merged | grep -v "\*" | grep -v "master" | grep -v "develop" | grep -v "staging" | xargs -n 1 git branch -d'
 
 ### ssh - server jobcloud
@@ -141,7 +140,7 @@ function chooseme(){
   fi
 }
 
-cpi(){
+function cpi(){
 
   if [ "$#" == 2 ]
   then
@@ -153,3 +152,25 @@ cpi(){
   fi
 }
 
+function switchtobranch(){
+
+  if [ "$#" == 2 ]
+  then
+    declare -a ARRAY
+    array=(`ls -1d -- */`)
+
+    for i in "${array[@]}"
+      do
+	if [[ $i == $2* ]]
+	then
+          cd $i
+          git checkout $1
+          git up
+          cd ..
+	fi
+    done
+  else
+
+    echo "move to directory and proide branch and pattern";
+  fi
+}
