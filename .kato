@@ -13,6 +13,7 @@ alias phpx="php -dxdebug.remote_autostart=On -didekey=PHPSTORM -dremote_host=loc
 alias brew-upgrade='brew cask list | xargs brew cask install --force'
 
 alias git-bclean='git branch --merged | grep -v "\*" | grep -v "master" | grep -v "develop" | grep -v "staging" | xargs -n 1 git branch -d'
+alias jobsearch-import='bin/console jobcloud:job:legacy-import:job-index jobsearchimport `mysql -u root -h 192.168.240.10 -e 'SELECT na$
 
 ### ssh - server jobcloud
 
