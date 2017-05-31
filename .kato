@@ -1,6 +1,7 @@
 PATH=$PATH:/opt/local/Library/Frameworks/Python.framework/Versions/3.3/bin
 ### Alias commands
 
+alias ssh-home='ssh ssh kato@78o7jmfyn4zht9eo.myfritz.net'x
 alias cdu='cd srv/http/'
 alias ls="ls -Gp"
 alias ll='ls -Gpl'
@@ -13,7 +14,10 @@ alias phpx="php -dxdebug.remote_autostart=On -didekey=PHPSTORM -dremote_host=loc
 alias brew-upgrade='brew cask list | xargs brew cask install --force'
 
 alias git-bclean='git branch --merged | grep -v "\*" | grep -v "master" | grep -v "develop" | grep -v "staging" | xargs -n 1 git branch -d'
-alias jobsearch-import='bin/console jobcloud:job:legacy-import:job-index jobsearchimport `mysql -u root -h 192.168.240.10 -e 'SELECT name FROM jobsSE.Suchindex;' | cut -f1 | tail -1` --bulk-size=300 --no-debug'
+alias jobsearch-import='bin/console jobcloud:job:legacy-import:job-index jobsearchimport `mysql -u root -h 192.168.240.10 -e "SELECT name FROM jobsSE.Suchindex;" | cut -f1 | tail -1` --bulk-size=300 --no-debug'
+
+alias legit-up='for ((i=1;i<12;i++)) do legacy $i && git up; done'
+alias ungit-up='for ((i=1;i<26;i++)) do unity $i && git up; done'
 
 ### ssh - server jobcloud
 
